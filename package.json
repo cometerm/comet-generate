@@ -1,0 +1,34 @@
+{
+  "name": "create-curr",
+  "version": "1.0.0",
+  "description": "CLI tool to scaffold fullstack Next.js projects with todo boilerplate",
+  "bin": {
+    "create-curr": "./bin/index.js"
+  },
+  "files": [
+    "bin",
+    "templates"
+  ],
+  "keywords": [
+    "nextjs",
+    "cli",
+    "scaffold",
+    "fullstack",
+    "bun"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "fs-extra": "^11.3.0",
+    "ora": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^18.0.1"
+  }
+}
