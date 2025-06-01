@@ -1,16 +1,12 @@
-import {
-  Funnel_Sans,
-  JetBrains_Mono,
-  Instrument_Serif,
-} from "next/font/google";
+import { Funnel_Sans, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 export const funnSans = Funnel_Sans({
   variable: "--font-funnel-sans",
   subsets: ["latin"],
 });
 
-export const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+export const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 

@@ -1,9 +1,9 @@
 import { ReactScan } from "@/lib/react-scan";
 import "./globals.css";
-import { funnSans, jetBrainsMono, instrumentSerif } from "./fonts";
+import { funnSans, geistMono, instrumentSerif } from "./fonts";
 
 export const metadata = {
-  title: "Better Curr",
+  title: "Better Curr - CLI scaffolding tool",
   icons: {
     icon: "/converted.png",
     shortcut: "/converted.png",
@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <ReactScan />
       <body
-        className={`${funnSans.variable} ${jetBrainsMono.variable} ${instrumentSerif.variable} antialiased bg-neutral-950`}
+        className={`${funnSans.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased bg-neutral-950`}
       >
         {children}
       </body>
