@@ -5,13 +5,31 @@ import fs from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
 import inquirer from "inquirer";
-import boxen from "boxen";
-import gradient from "gradient-string";
-import figlet from "figlet";
 
-const program = new Command();
+ora.prototype.succeed = function (text) {
+  this.stopAndPersist({
+    symbol: chalk.green("●"),
+    text: text || this.text,
+  });
+  return this;
+};
 
-// Utility functions
+ora.prototype.fail = function (text) {
+  this.stopAndPersist({
+    symbol: chalk.red("●"),
+    text: text || this.text,
+  });
+  return this;
+};
+
+ora.prototype.warn = function (text) {
+  this.stopAndPersist({
+    symbol: chalk.yellow("●"),
+    text: text || this.text,
+  });
+  return this;
+};
+
 const log = {
   info: (msg) => console.log(chalk.blue("●"), msg),
   success: (msg) => console.log(chalk.green("●"), msg),
@@ -21,7 +39,6 @@ const log = {
 
 const validateProjectName = (name) => {
   if (name === ".") return true;
-
   const validNameRegex = /^[a-zA-Z0-9-_]+$/;
   if (!validNameRegex.test(name)) {
     return "Project name can only contain letters, numbers, hyphens, and underscores";
@@ -57,53 +74,73 @@ const cleanup = async (projectPath) => {
   }
 };
 
-const showWelcome = () => {
-  console.clear();
-  const title = figlet.textSync("create-curr", {
-    font: "Small",
-    horizontalLayout: "fitted",
-  });
-  console.log(gradient.rainbow(title));
-  console.log(
-    boxen(
-      chalk.white("Fast, modern Next.js project scaffolding tool\n") +
-        chalk.gray("Built with love for developers"),
-      {
-        padding: 1,
-        margin: 1,
-        borderStyle: "round",
-        borderColor: "blue",
-        textAlignment: "center",
+const askYesNo = async (message, def = true) => {
+  const defStr = def ? "Y/n" : "y/N";
+  const { answer } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "answer",
+      message: `${message} (${defStr})`,
+      filter: (input) => input.trim().toLowerCase(),
+      validate: (input) => {
+        if (!input && typeof def === "boolean") return true;
+        if (["y", "yes", "n", "no"].includes(input)) return true;
+        return "Please answer yes or no";
       },
-    ),
-  );
+    },
+  ]);
+
+  let result;
+  if (!answer && typeof def === "boolean") {
+    result = def;
+  } else {
+    result = ["y", "yes"].includes(answer);
+  }
+
+  if (result) {
+    console.log(chalk.green("●"), message, chalk.gray("Yes"));
+  } else {
+    console.log(chalk.red("●"), message, chalk.gray("No"));
+  }
+
+  return result;
 };
 
 const getProjectConfig = async (projectName) => {
-  const questions = [
-    {
-      type: "input",
-      name: "projectName",
-      message: "Project name (use '.' for current directory):",
-      default: projectName,
-      validate: validateProjectName,
-      when: !projectName,
-    },
-    {
-      type: "confirm",
-      name: "installDependencies",
-      message: "Install dependencies?",
-      default: true,
-    },
-    {
-      type: "confirm",
-      name: "setupShadcn",
-      message: "Setup shadcn/ui with button component?",
-      default: true,
-    },
-  ];
+  let config = {};
 
-  return await inquirer.prompt(questions);
+  if (!projectName) {
+    while (true) {
+      const { projectName: name } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "projectName",
+          message: "Project name (use '.' for current directory):",
+          default: "my-app",
+        },
+      ]);
+
+      const valid = validateProjectName(name);
+      if (valid === true) {
+        console.log(chalk.green("●"), "Project name:", chalk.gray(name));
+        config.projectName = name;
+        break;
+      } else {
+        console.log(chalk.red("●"), valid);
+      }
+    }
+  } else {
+    config.projectName = projectName;
+  }
+
+  config.installDependencies = await askYesNo("Install dependencies?", true);
+
+  config.setupShadcn = await askYesNo(
+    "Setup shadcn/ui with button component?",
+    true,
+  );
+
+  return config;
 };
 
 async function createProject(config) {
@@ -114,40 +151,23 @@ async function createProject(config) {
     : path.resolve(finalProjectName);
   const templatePath = path.join(__dirname, "../templates");
 
-  // Check if directory exists and has files (only for non-current directory)
   if (!isCurrentDir && fs.existsSync(projectPath)) {
-    log.error(`Directory ${projectName} already exists!`);
-    const { overwrite } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "overwrite",
-        message: "Do you want to overwrite it?",
-        default: false,
-      },
-    ]);
-
+    log.error(`Directory ${finalProjectName} already exists!`);
+    const overwrite = await askYesNo("Do you want to overwrite it?", false);
     if (!overwrite) {
       process.exit(1);
     }
-
     await fs.remove(projectPath);
   }
 
-  // Check if current directory has files when using "."
   if (isCurrentDir) {
     const files = await fs.readdir(projectPath);
     const hasFiles = files.length > 0;
-
     if (hasFiles) {
-      const { proceed } = await inquirer.prompt([
-        {
-          type: "confirm",
-          name: "proceed",
-          message: "Current directory is not empty. Continue anyway?",
-          default: false,
-        },
-      ]);
-
+      const proceed = await askYesNo(
+        "Current directory is not empty. Continue anyway?",
+        false,
+      );
       if (!proceed) {
         process.exit(1);
       }
@@ -156,7 +176,6 @@ async function createProject(config) {
 
   console.log("\n" + chalk.blue("Setting up your project...\n"));
 
-  // Step 1: Create project structure
   const structureSpinner = ora({
     text: "Creating project structure...",
     spinner: "dots12",
@@ -168,7 +187,6 @@ async function createProject(config) {
     }
     await fs.copy(templatePath, projectPath);
 
-    // Update package.json
     const packageJsonPath = path.join(projectPath, "package.json");
     const packageJson = await fs.readJson(packageJsonPath);
     packageJson.name = isCurrentDir
@@ -186,10 +204,8 @@ async function createProject(config) {
     process.exit(1);
   }
 
-  // Change to project directory
   process.chdir(projectPath);
 
-  // Step 2: Install dependencies (if requested)
   if (config.installDependencies) {
     const installSpinner = ora({
       text: "Installing dependencies with Bun...",
@@ -209,10 +225,9 @@ async function createProject(config) {
     }
   }
 
-  // Step 3: Setup shadcn (if requested)
   if (config.setupShadcn && config.installDependencies) {
     const shadcnSpinner = ora({
-      text: "Setting up shadcn/ui...",
+      text: "Setting up shadcn...",
       spinner: "earth",
     }).start();
 
@@ -225,34 +240,23 @@ async function createProject(config) {
     }
   }
 
-  // Success message
   console.log("\n" + chalk.green("Project created successfully!\n"));
 
   const nextSteps = [];
-
   if (!isCurrentDir) {
     nextSteps.push(`cd ${finalProjectName}`);
   }
-
   nextSteps.push(
     config.installDependencies ? "bun dev" : "bun install && bun dev",
   );
 
-  console.log(
-    boxen(
-      chalk.white.bold("Next steps:\n\n") +
-        nextSteps.map((step, i) => `${i + 1}. ${chalk.cyan(step)}`).join("\n") +
-        "\n\n" +
-        chalk.gray("Happy coding!"),
-      {
-        padding: 1,
-        margin: 1,
-        borderStyle: "round",
-        borderColor: "green",
-      },
-    ),
-  );
+  console.log(chalk.bold("Next steps:"));
+  nextSteps.forEach((step, i) => {
+    console.log(`  ${i + 1}. ${chalk.cyan(step)}`);
+  });
 }
+
+const program = new Command();
 
 program
   .name("create-curr")
@@ -263,15 +267,10 @@ program
   .option("--no-deps", "skip dependency installation")
   .option("--no-shadcn", "skip shadcn/ui setup")
   .action(async (projectName, options) => {
-    // Show welcome screen
-    showWelcome();
-
-    // Check prerequisites
     if (!checkPrerequisites()) {
       process.exit(1);
     }
 
-    // Validate project name if provided
     if (projectName) {
       const validation = validateProjectName(projectName);
       if (validation !== true) {
@@ -283,14 +282,12 @@ program
     let config;
 
     if (options.yes) {
-      // Use defaults when --yes flag is used
       config = {
         projectName: projectName || "my-app",
         installDependencies: !options.noDeps,
         setupShadcn: !options.noShadcn,
       };
     } else {
-      // Interactive mode
       config = await getProjectConfig(projectName);
     }
 
