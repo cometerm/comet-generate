@@ -3,12 +3,12 @@ import pc from "picocolors";
 import { execa } from "execa";
 import ora, { type Spinner } from "ora";
 import path from "node:path";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rm, rename } from "node:fs/promises";
 import type { ProjectOptions, ProjectResult } from "../types";
 import prompts from "prompts";
 
 const oraSpinnerConfig: Spinner = {
-  interval: 200,
+  interval: 100,
   frames: ["◉", "◎"],
 };
 
@@ -76,6 +76,35 @@ async function copyTemplate(
     spinner.succeed("Project files were set up.");
   } catch (error) {
     spinner.fail("Failed to set up project files.");
+    throw error;
+  }
+}
+
+async function renameDotFiles(projectPath: string) {
+  const spinner = ora({
+    text: "Finalizing project files...",
+    spinner: oraSpinnerConfig,
+  }).start();
+
+  const filesToRename = [
+    { from: "gitignore", to: ".gitignore" },
+    { from: "env.local", to: ".env.local" },
+    { from: "env.production", to: ".env.production" },
+    { from: "prettierrc", to: ".prettierrc" },
+    { from: "prettierignore", to: ".prettierignore" },
+  ];
+
+  try {
+    for (const file of filesToRename) {
+      const oldPath = path.join(projectPath, file.from);
+      const newPath = path.join(projectPath, file.to);
+      if (await pathExists(oldPath)) {
+        await rename(oldPath, newPath);
+      }
+    }
+    spinner.succeed("Project files finalized.");
+  } catch (error) {
+    spinner.fail("Failed to finalize project files.");
     throw error;
   }
 }
@@ -155,6 +184,7 @@ export async function createProject(
   try {
     const templatePath = path.join(import.meta.dir, "templates", "default");
     await copyTemplate(templatePath, projectPath, projectName);
+    await renameDotFiles(projectPath);
   } catch (error) {
     logError("Could not create project.", error);
     return null;
