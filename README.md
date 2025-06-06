@@ -2,8 +2,6 @@
 
 Forget the boring setup. Comet gets your new project ready to go by asking a few simple questions. It handles all the annoying first steps: making the project folder, firing up a new git repo, and grabbing your dependencies with bun.
 
----
-
 ```
 ❯ bunx create-comet@latest
 
