@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { MouseLeftClick, Spinner } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import GoogleSignInButton from "@/components/auth/google-sign-in-button";
 
 interface GameState {
   status: "waiting" | "playing" | "cooldown";
@@ -161,6 +162,10 @@ export default function ClickSpeed() {
 
   return (
     <div className="min-h-screen bg-indigo-300 flex flex-col items-center justify-center p-8">
+      <div className="absolute top-8 right-8">
+        <GoogleSignInButton />
+      </div>
+
       <div className="relative w-80 h-80">
         <Button
           ref={buttonRef}

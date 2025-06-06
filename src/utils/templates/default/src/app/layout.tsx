@@ -1,6 +1,7 @@
 import { ReactScan } from "@/lib/react-scan";
 import type { Metadata } from "next";
 import { funnelSans, instrumentSerif, geistMono } from "./fonts";
+import SessionProvider from "@/components/providers/session-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function RootLayout({
       <body
         className={`${funnelSans.variable} ${instrumentSerif.variable} ${geistMono.variable} antialiased bg-indigo-300`}
       >
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );
