@@ -32,31 +32,3 @@ npm install -g bun # The last npm command you'll ever need
 ```bash
 npm install -g pnpm@latest-10
 ```
-
-## Demonstration
-
-Here's what it looks like to generate a new project:
-
-```text
-❯ bunx create-comet@latest
-
-   .aMMMb  .aMMMb  dMMMMMMMMb dMMMMMP dMMMMMMP
-  dMP"VMP dMP"dMP dMP"dMP"dMPdMP        dMP
- dMP     dMP dMP dMP dMP dMPdMMMP      dMP
-dMP.aMP dMP.aMP dMP dMP dMPdMP        dMP
-VMMMP"  VMMMP" dMP dMP dMPdMMMMMP    dMP
-
-? Path to your project or name? » comet-app
-✔ Project files were set up.
-? Initialize a git repository? » (Y/n)
-✔ Git repository initialized.
-? Install dependencies? » (Y/n)
-◉ Installing dependencies...
-✔ Dependencies installed.
-    - cd comet-app
-    - bun dev
-
-    - Update database connection string in .env.local
-    - Start building API in src/app/api
-    - Create database models in src/models
-```
