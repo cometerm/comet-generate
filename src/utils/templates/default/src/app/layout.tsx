@@ -1,12 +1,7 @@
 import { ReactScan } from "@/lib/react-scan";
 import type { Metadata } from "next";
-import { Funnel_Sans } from "next/font/google";
+import { funnelSans, instrumentSerif, geistMono } from "./fonts";
 import "./globals.css";
-
-const funnelSans = Funnel_Sans({
-  variable: "--font-funnel-sans",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Comet Press - Click Speed Test",
@@ -25,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ReactScan />
-      <body className={`${funnelSans.variable} antialiased bg-indigo-300`}>
+      <body
+        className={`${funnelSans.variable} ${instrumentSerif.variable} ${geistMono.variable} antialiased bg-indigo-300`}
+      >
         {children}
       </body>
     </html>
