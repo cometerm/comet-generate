@@ -1,7 +1,7 @@
 {
   "name": "create-comet",
-  "version": "0.0.4",
-  "description": "Create a full-stack Comet project",
+  "version": "0.0.6",
+  "description": "Create a full-stack comet project in seconds",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build ./src/index.ts --outdir ./dist --target bun && cpx \"src/utils/templates/**/*\" \"dist/utils/templates\"",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun && cpx \"src/utils/templates/**/*\" \"dist/templates\"",
     "start": "bun ./dist/index.js",
     "lint": "prettier --check .",
     "format": "prettier --write .",
