@@ -153,12 +153,7 @@ export async function createProject(
   await ensureDir(projectPath);
 
   try {
-    const templatePath = path.join(
-      import.meta.dir,
-      "utils",
-      "templates",
-      "default",
-    );
+    const templatePath = path.join(import.meta.dir, "templates", "default");
     await copyTemplate(templatePath, projectPath, projectName);
   } catch (error) {
     logError("Could not create project.", error);

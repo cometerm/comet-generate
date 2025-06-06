@@ -5,11 +5,11 @@ Forget the boring setup. Comet gets your new project ready to go by asking a few
 ```text
 ❯ bunx create-comet@latest
 
-   .aMMMb  .aMMMb  dMMMMMMMMb dMMMMMP dMMMMMMP 
-  dMP"VMP dMP"dMP dMP"dMP"dMPdMP        dMP    
- dMP     dMP dMP dMP dMP dMPdMMMP      dMP     
-dMP.aMP dMP.aMP dMP dMP dMPdMP        dMP      
-VMMMP"  VMMMP" dMP dMP dMPdMMMMMP    dMP 
+   .aMMMb  .aMMMb  dMMMMMMMMb dMMMMMP dMMMMMMP
+  dMP"VMP dMP"dMP dMP"dMP"dMPdMP        dMP
+ dMP     dMP dMP dMP dMP dMPdMMMP      dMP
+dMP.aMP dMP.aMP dMP dMP dMPdMP        dMP
+VMMMP"  VMMMP" dMP dMP dMPdMMMMMP    dMP
 
 ? Path to your project or name? » comet-app
 ✔ Project files were set up.
