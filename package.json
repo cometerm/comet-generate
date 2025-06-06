@@ -1,6 +1,6 @@
 {
   "name": "create-comet",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Create a new Next.js project with MongoDB and Mongoose",
   "type": "module",
   "main": "./dist/index.js",
