@@ -1,12 +1,3 @@
 .git
-.github
-.gitignore
 node_modules
 *.log
-.prettierrc
-.prettierignore
-pnpm-lock.yaml
-tsconfig.json
-lint-staged.config.js
-husky/
-src/

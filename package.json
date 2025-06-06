@@ -1,6 +1,6 @@
 {
   "name": "create-comet",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Create a full-stack comet project in seconds",
   "type": "module",
   "main": "./dist/index.js",
